@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import yaml
+import argparse
+import logging
+import glob
+
+
+"""
+    utmh server - Creating an overall metafile as index 
+                  metafile (INDEX.yaml) by multiple given
+                  sub metafiles of served images.
+"""
+
+
+__appname__ = "utmh-server"
+__version__ = "0.9"
+__author__ = "@gyptazy <gyptazy [at] gyptazy.ch"
+
+
+def main():
+    """ Run the main function of utmh """
+
+    # Get arguments for config file from CLI
+    argparser = argparse.ArgumentParser(description='utmh-server')
+    argparser.add_argument('-c', '--config', type=str, help='Path to config file')
+    cliargs = argparser.parse_args()
+
+    # Stop utmh-server if no config file is given
+    if cliargs.config is None:
+        print("No config file is given.")
+        sys.exit(1)
+
+    # Get config (YAML) file
+    config_content = get_yaml(cliargs.config)
+
+    # Set file for logging
+    logging = set_logger(config_content["log"])
+
+    # Validate path (file/dir) is present
+    test_path(logging, config_content["srv_root"], fail=True)
+
+    # Get all metadata files
+    metadata = get_metadata_files(logging, config_content["srv_root"])
+
+    # Read all metadata files
+    index = get_metadata_content(logging, metadata) 
+
+    # Set metadata 'index.yaml'
+    set_metadata_index(logging, config_content["srv_root"], index)
+
+
+def set_metadata_index(logging, directory, index):
+    """ Set and write index of metadata file for repository """
+    index_path = f"{directory}/index.yaml"
+
+    # Validate if index file is already present
+    index_file = test_path(logging, index_path)
+
+    # Remove outdated index if present 
+    if index_file:
+        os.remove(index_path)
+        logging.info("Removed outdated index")
+
+    # Write index file as 'index.yaml'
+    try:
+        with open(index_path, 'w') as file:
+            yaml.dump(index, file)
+        logging.info(f"Wrote index file in: {directory}")
+    except OS.Error:
+        logging.critical(f"Could not write index file in: {directory}")
+
+
+def get_metadata_content(logging, metadata):
+    """ Get content of metadata files """
+    index = {}
+    for i in metadata:
+        logging.info(f"Get content of metadata: {i}")
+        single_metadata = get_yaml(i) 
+        for key, value in single_metadata.items():
+            index[key] = value
+
+    logging.info("Got all metadata for index.")
+    return index
+
+
+def get_metadata_files(logging, directory):
+    """ Get all metadata for images from srv directory """
+    metadata = glob.glob(f"{directory}/images/*.yaml")
+    logging.info(f"Found metadata files for images: {metadata}")
+    return metadata
+
+
+def test_path(logging, fname, fail=False):
+    """ Test is path (file/dir) is present """
+    present = os.path.exists(fname)
+
+    if not present and fail:
+        logging.critical(f"Can not proceed. File/Dir is not present: {fname}")
+        sys.exit(1)
+
+    logging.info(f"File/Dir is present: {fname}")
+    return present
+
+
+def get_yaml(config_file):
+    """ Get the content of a YAML file """
+    with open(config_file) as stream:
+        try:
+            config = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    return config
+
+
+def set_logger(log_file):
+    """ Set the logger """ 
+    logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.DEBUG,
+                        format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M%p')
+    logging.info(f"Logger configured. Logging to: {log_file}")
+    return logging
+
+
+main()

@@ -199,16 +199,17 @@ The server configuration is stright forward and just needs a simple `YAML` confi
 
 `server-config.yaml`:
 ```
-srv-engine: nginx
-srv-root: /var/www/utm-harbor.gyptazy.ch/htdcos/
+srv_engine: nginx
+srv_root: /var/www/utm-harbor.gyptazy.ch/htdcos/
+log: /var/log/utmh-server.log
 ```
 
 ### Server Usage
-The `utmh generate -c $server-config.yaml` commands creates the new repo index (`INDEX.yaml`) and should be performed at least after every new image upload. When running a setup with multiple users that may upload images, you may want to run this periodically by a `cronjob` or `systemd-timer`.
+The `utmh-server generate -c $server-config.yaml` commands creates the new repo index (`INDEX.yaml`) and should be performed at least after every new image upload. When running a setup with multiple users that may upload images, you may want to run this periodically by a `cronjob` or `systemd-timer`.
 
 **Cronjob Example**:
 ```
-*/5 * * * * $user /opt/utmh generate -c /opt/server-config.yaml
+*/5 * * * * $user /opt/utmh-server generate -c /opt/server-config.yaml
 ```
 
 ## Public Repositories

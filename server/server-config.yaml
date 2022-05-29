@@ -1,2 +1,3 @@
-srv-engine: nginx
+srv_engine: nginx
 srv-root: /home/utm-harbor.gyptazy.ch/htdocs/
+log: /var/log/utmh-server.log
