@@ -1,0 +1,4 @@
+# Required
+server: utm-harbor.gyptazy.ch
+port: 443
+ssl-verify: true

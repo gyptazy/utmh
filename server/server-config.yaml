@@ -1,0 +1,2 @@
+srv-engine: nginx
+srv-root: /home/utm-harbor.gyptazy.ch/htdocs/
