@@ -1,6 +1,6 @@
 # utmh - UTM Harbor Management Tool
-`utmh` (UTM Harbor) is a simple project to provide ready to use images (e.g. Linux and BSD) for `Apple Silicon` (`ARM64` based) CPUs with [UTM](https://mac.getutm.app). [UTM](https://mac.getutm.app) is a QEMU based full featured system emulator and virtual machine host for iOS and macOS which allows to run Linux, BSD, Windows and several other operating systems on your iPhone, iPad and Mac. While [UTM](https://mac.getutm.app) is a mac'ish app, `utmh` provides a `server` and `client` tool to fetch ready to use images that can be directly used without further installation or adjustments to credentials, SSH setups or similar. `utmh` requires a utmharbor (a repository) that serves the final images.
- 
+`utmh` (UTM Harbor) is a simple project to provide ready to use images (e.g. Linux and BSD) for `Apple Silicon` (`ARM64` based) CPUs with [UTM](https://mac.getutm.app). [UTM](https://mac.getutm.app) is a QEMU based full featured system emulator and virtual machine host for iOS and macOS which allows to run Linux, BSD, Windows and several other operating systems on your iPhone, iPad and Mac. While [UTM](https://mac.getutm.app) is a mac'ish app, `utmh` provides a `server` and `client` tool to fetch ready to use images that can be directly used without further installation or adjustments to credentials, SSH setups or similar. `utmh` requires a utmharbor (a repository) that serves the final images. `umth` is fully written in Python.
+  
 ## Table of Content
 - [utmh - UTM Harbor Management Tool](#utmh---utm-harbor-management-tool)
   - [Table of Content](#table-of-content)
@@ -11,6 +11,7 @@
     - [Image Structure](#image-structure)
     - [Image Credentials](#image-credentials)
   - [Client Tool](#client-tool)
+    - [Client Requirements](#client-requirements)
     - [Client Configuration](#client-configuration)
     - [Client Usage](#client-usage)
       - [List Images](#list-images)
@@ -73,6 +74,9 @@ Images are shipped in a compressed tar ball which includes the `$imagename.utm`.
 ### Image Credentials
 
 ## Client Tool
+### Client Requirements
+ * Python3 (including YAML)
+
 ### Client Configuration
 The client configuration is stright forward and just needs a simple `YAML` config within the `.utmh` subfolder in your home directory.
 
@@ -149,7 +153,7 @@ Currently there is no possibility in `UTM` (upstream) to run images in headless 
 
 ## Server Tool (utm-harbor)
 ### Server Requirements
-The `utm-harbor` can serve the image and metadata itself or use an already present webserver like `Apache`, `nginx` or something similar. Since there are only static files no further configuration will be needed. The repository index will be updated by server tool and only needs the permissions to write within the given `htdocs`.
+The `utm-harbor` can serve the image and metadata itself or use an already present webserver like `Apache`, `nginx` or something similar. Since there are only static files no further configuration will be needed. The repository index will be updated by server tool and only needs the permissions to write within the given `htdocs`. Next to it, `Python3` will be needed.
 
 ### Server Repository Structure
 Within the `htdocs` the following structure is given:
