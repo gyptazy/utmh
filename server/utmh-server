@@ -76,6 +76,8 @@ def set_metadata_index(logging, directory, index):
 def get_metadata_content(logging, metadata):
     """ Get content of metadata files """
     index = {}
+
+    # Interate through all image metafiles
     for i in metadata:
         logging.info(f"Get content of metadata: {i}")
         single_metadata = get_yaml(i) 

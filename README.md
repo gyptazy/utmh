@@ -83,16 +83,28 @@ The client configuration is stright forward and just needs a simple `YAML` confi
 `.utmh/config.yaml`:
 ```
 # Required
-server: utm-harbor.gyptazy.ch
+server: https://utm-harbor.gyptazy.ch
 port: 443
-ssl-verify: true
+ssl_verify: true
+image_path: downloads/
+log: test.log
 
 # Optional for image uploads
 user: gyptazy
 password: 1SomE_cRaZy_PaSsWoRd1
 ```
 
-By default, the `utm-harbor.gyptazy.ch` mirror will be used and can be adjusted to any other. `ssl-verify` allows you to skip further SSL validation on self signed certificates.
+|Option|Value|Description|
+|--|--|--|
+|server|https://utm-harbor.gyptazy.ch|HTTP(s) URI to remote repositoy|
+|port|443|TCP Port to use (if repository server is running on uncommon port)
+|ssl_verify|true|Disable/enable SSL verify|
+|image_path|downloads/|Path to download/save images|
+|log|test.log|Path to log file|
+|user|$username|Username to use for uploading images|
+|password|$password|Password to use for uploading images|
+
+By default, the `https://utm-harbor.gyptazy.ch` mirror will be used and can be adjusted to any other. `ssl-verify` allows you to skip further SSL validation on self signed certificates.
 
 ### Client Usage
 This chapter briefly describes all options of the `utmh` client tool.
