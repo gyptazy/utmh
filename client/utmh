@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import yaml
+import argparse
+import logging
+import urllib.request
+import shutil
+
+
+"""
+    utmh - Client tool to manage images from repository 
+           and to interact with spawned VMs.
+"""
+
+
+__appname__ = "utmh"
+__version__ = "0.9"
+__author__ = "@gyptazy <gyptazy [at] gyptazy.ch"
+
+
+def main():
+    """ Run the main function of utmh """
+    # Get arguments for config file from CLI
+    argparser = argparse.ArgumentParser(description='utmh')
+    argparser.add_argument('-c', '--config', type=str, help='Path to config file')
+    subparser = argparser.add_subparsers(dest='cmd')
+    for cmd in [
+                 "list",
+                 "download",
+                 "upload",
+                 "start",
+                 "stop",
+                 "ssh"
+                ]:
+        subparser.add_parser(cmd)
+    cliargs = argparser.parse_args()
+
+    # Set file for logging
+    logging = set_logger('utmh.log')
+    
+    # Test for a valid config
+    config_file = test_config_file(logging, cliargs.config)
+    test_path(logging, config_file, fail=True)
+    
+    # Get config (YAML) file
+    config_content = get_yaml(cliargs.config)
+    
+    # Validate config content
+    validate_config_file(logging, config_content)
+
+    if cliargs.cmd == "list":
+        """ Option: List all available images on remote registry """
+        image_list(logging, config_content)
+
+    if cliargs.cmd == "download":
+        """ Option: Download a specific image from remote registry """
+        dummy()
+
+    if cliargs.cmd == "upload":
+        """ Option: Upload a specific image to remote registry """
+        dummy()
+
+    if cliargs.cmd == "start":
+        """ Option: Start VM"""
+        dummy()
+
+    if cliargs.cmd == "stop":
+        """ Option: Stop VM """
+        dummy()
+
+    if cliargs.cmd == "ssh":
+        """ Option: SSH into VM (as root) """
+        dummy()
+
+
+def dummy():
+    """ Dummy function """
+    print("Not yet implemented")
+
+
+
+
+
+def image_list(logging, config_content):
+    """ List all available images on remote registry """
+    download_file(logging, config_content, "/", "index.yaml")
+    test_path(logging, 'index.yaml', fail=True)
+    repo_index = get_yaml('index.yaml')
+    print_table(logging, repo_index)
+
+
+def print_table(logging, repo_index):
+    """ Pretty print a table output on CLI """
+
+
+def download_file(logging, config_content, remote_path, remote_file, image_type=False):
+    """ Download remote files via http/https """
+    server = config_content["server"]
+    url = f"{server}{remote_path}{remote_file}"
+    logging.info(f"Downloading file: {url}")
+
+    # Check if a image or repo index file will be downloaded
+    if image_type:
+        fname = f"remote_file"
+    else:
+        fname = "index.yaml"
+
+    # Download image or repo index file from remote repository
+    try:
+        with urllib.request.urlopen(url) as response, open(fname, 'wb') as out_file:
+            shutil.copyfileobj(response, out_file)
+    except urllib.error.HTTPError as err:
+        logging.error(f"HTTP Error: {err}")
+    except shutil.SameFileError:
+        # This should never happen by SHA256 check
+        # but we may pass here
+        pass
+
+
+def validate_config_file(logging, config_content):
+    """ Validate config file """
+    server = config_content.get("server", None)
+    if server is None:
+        logging.critical("'server' option is missing in config file.")
+
+
+def test_config_file(logging, fname):
+    """ Test for a valid config file """
+    # Use config that is explicit given by the user
+    if fname is not None:
+        config_file = fname
+    # Fallback to ~/.utmh/config.yaml
+    else:
+        config_file = "~/.utmh/config.yaml"
+
+    return config_file
+
+
+def test_path(logging, fname, fail=False):
+    """ Test is path (file/dir) is present """
+    present = os.path.exists(fname)
+
+    if not present and fail:
+        logging.critical(f"Can not proceed. File/Dir is not present: {fname}")
+        sys.exit(1)
+
+    logging.info(f"File/Dir is present: {fname}")
+    return present
+
+
+def get_yaml(config_file):
+    """ Get the content of a YAML file """
+    with open(config_file) as stream:
+        try:
+            config = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            logging.critical(exc)
+    return config
+
+
+def set_logger(log_file):
+    """ Set the logger """ 
+    logging.basicConfig(filename=log_file, encoding='utf-8', level=logging.DEBUG,
+                        format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M%p')
+    logging.info(f"Logger configured. Logging to: {log_file}")
+
+    return logging
+
+
+main()

@@ -1,4 +1,6 @@
 # Required
-server: utm-harbor.gyptazy.ch
+server: https://utm-harbor.gyptazy.ch
 port: 443
-ssl-verify: true
+ssl_verify: true
+image_path: downloads/
+log: test.log
