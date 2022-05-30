@@ -25,6 +25,7 @@ def main():
     # Get arguments for config file from CLI
     argparser = argparse.ArgumentParser(description='utmh')
     argparser.add_argument('-c', '--config', type=str, help='Path to config file')
+    # Create subparser for actions
     subparser = argparser.add_subparsers(dest='cmd')
     for cmd in [
                  "list",
@@ -93,6 +94,19 @@ def image_list(logging, config_content):
 
 def print_table(logging, repo_index):
     """ Pretty print a table output on CLI """
+    # Print table header
+    print("{:<15} {:<15} {:<15} {:<15} {:<15}".format("OS Type", "OS", "Version", "Packages", "Arch"))
+    print("-----------------------------------------------------------------------")
+
+    for k, v in repo_index.items():
+        os_type = str(v.get("os_tpye", "Unknown"))
+        os  = str(v.get("os", "Unknown"))
+        ver = str(v.get("version", "Unknown"))
+        inst_type =  str(v.get("type", "Unknown"))
+        arch = str(v.get("arch", "Unknown"))
+
+        # Print output of a single meta file
+        print ("{:<15} {:<15} {:<15} {:<15} {:<15}".format(os_type, os, ver, inst_type, arch))
 
 
 def download_file(logging, config_content, remote_path, remote_file, image_type=False):
