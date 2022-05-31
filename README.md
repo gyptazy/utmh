@@ -75,7 +75,13 @@ Images are shipped in a compressed tar ball which includes the `$imagename.utm`.
 
 ## Client Tool
 ### Client Requirements
- * Python3 (including YAML)
+ * Python3
+ * UTM (https://mac.getutm.app)
+
+Installation of additional packages for Python:
+```
+pip3 install pyyaml
+```
 
 ### Client Configuration
 The client configuration is stright forward and just needs a simple `YAML` config within the `.utmh` subfolder in your home directory.
